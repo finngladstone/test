@@ -53,6 +53,6 @@ jobs:
         with:
           args: |
             🚨 **Site Update Detected!**
-            Repository: ${{ github.repository }}
-            Time: $(date)
-            [View Workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            @${{ secrets.DISCORD_USERNAME }}
+            [Website Link](https://www.lartdelautomobilekar.com/collections/lart-de-lautomobile-kar)
+            
