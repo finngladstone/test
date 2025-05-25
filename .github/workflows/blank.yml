@@ -43,3 +43,16 @@ jobs:
           git add .github/site-baseline.html
           git commit -m "Update site baseline $(date)" || exit 0
           git push
+
+
+      - name: Discord Notification
+        if: env.SITE_UPDATED == 'true'
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: |
+            🚨 **Site Update Detected!**
+            Repository: ${{ github.repository }}
+            Time: $(date)
+            [View Workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
