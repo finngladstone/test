@@ -1,15 +1,19 @@
 name: Monitor Site Changes
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Every 6 hours
+    - cron: '0 */6 * * *'
   workflow_dispatch:
 
 jobs:
   check-updates:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # This is key!
     steps:
       - uses: actions/checkout@v4
-      
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Fetch current site content
         run: |
           curl -s https://www.marukyu-koyamaen.co.jp/english/shop/products/catalog/matcha > current_content.html
