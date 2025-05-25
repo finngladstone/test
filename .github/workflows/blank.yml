@@ -53,6 +53,6 @@ jobs:
         with:
           args: |
             🚨 **Site Update Detected!**
-            @${{ secrets.DISCORD_USERNAME }}
+            <@${{ secrets.DISCORD_USERNAME }}>
             [Website Link](https://www.lartdelautomobilekar.com/collections/lart-de-lautomobile-kar)
             
