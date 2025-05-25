@@ -1,7 +1,7 @@
 name: Monitor Site Changes
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '*/30 * * * *'  # Every 30 minutes
   workflow_dispatch:
 
 jobs:
