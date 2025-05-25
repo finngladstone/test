@@ -7,27 +7,23 @@ on:
 jobs:
   check-updates:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Download previous content
-        uses: actions/download-artifact@v4
-        with:
-          name: site-content
-          path: .
-        continue-on-error: true
-          
+      - uses: actions/checkout@v4
+      
       - name: Fetch current site content
         run: |
-          curl -s https://www.marukyu-koyamaen.co.jp/english/shop/products/catalog/matcha > current_content.html
+          curl -s https://example.com > current_content.html
           
       - name: Compare with previous version
         run: |
-          if [ -f previous_content.html ]; then
-            if ! diff -q current_content.html previous_content.html > /dev/null; then
+          if [ -f .github/site-baseline.html ]; then
+            if ! diff -q current_content.html .github/site-baseline.html > /dev/null; then
               echo "🚨 Site has been updated!"
               echo "SITE_UPDATED=true" >> $GITHUB_ENV
-              # Show the differences
               echo "Changes detected:"
-              diff previous_content.html current_content.html || true
+              diff .github/site-baseline.html current_content.html | head -20 || true
             else
               echo "✅ No changes detected"
               echo "SITE_UPDATED=false" >> $GITHUB_ENV
@@ -37,15 +33,13 @@ jobs:
             echo "SITE_UPDATED=true" >> $GITHUB_ENV
           fi
           
-      - name: Upload current content for next comparison
-        uses: actions/upload-artifact@v4
-        with:
-          name: site-content
-          path: current_content.html
-          retention-days: 30
-          
-      - name: Notify on changes
+      - name: Update baseline if changed
         if: env.SITE_UPDATED == 'true'
         run: |
-          echo "Site updated! Add your notification logic here"
-          # Could send email, Slack message, create issue, etc.
+          mkdir -p .github
+          cp current_content.html .github/site-baseline.html
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .github/site-baseline.html
+          git commit -m "Update site baseline $(date)" || exit 0
+          git push
