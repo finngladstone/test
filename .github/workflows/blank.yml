@@ -1,0 +1,40 @@
+name: Monitor Site Changes
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+
+jobs:
+  check-updates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Fetch current site content
+        run: |
+          curl -s https://example.com > current_content.html
+          
+      - name: Compare with previous version
+        run: |
+          if [ -f previous_content.html ]; then
+            if ! diff -q current_content.html previous_content.html > /dev/null; then
+              echo "Site has been updated!"
+              echo "SITE_UPDATED=true" >> $GITHUB_ENV
+            else
+              echo "No changes detected"
+              echo "SITE_UPDATED=false" >> $GITHUB_ENV
+            fi
+          else
+            echo "First run - saving baseline"
+            echo "SITE_UPDATED=true" >> $GITHUB_ENV
+          fi
+          
+      - name: Save current content for next comparison
+        if: env.SITE_UPDATED == 'true'
+        run: |
+          cp current_content.html previous_content.html
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add previous_content.html
+          git commit -m "Update baseline content" || exit 0
+          git push
