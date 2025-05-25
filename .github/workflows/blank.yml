@@ -14,7 +14,7 @@ jobs:
       
       - name: Fetch current site content
         run: |
-          curl -s https://www.marukyu-koyamaen.co.jp/english/shop/products/catalog/matcha > current_content.html
+          curl -s https://www.lartdelautomobilekar.com/collections/lart-de-lautomobile-kar > current_content.html
           
       - name: Compare with previous version
         run: |
